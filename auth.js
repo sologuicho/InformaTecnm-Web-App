@@ -1,8 +1,8 @@
-// Configuración de autenticación con Microsoft
+// Configuración de autenticación con Microsoft - CORREGIDO
 const AUTH_CONFIG = {
     clientId: 'f9467bc5-d6d0-4200-98c1-887bfc90fc86',
-    tenantId: '7aeff8771-a4f2-4f05-8abb-1f87bfc47a21',
-    redirectUri: 'https://sologuicho.github.io/informaTecnm-Web-App/',
+    tenantId: '7aeff8771-a4f2-4f05-8abb-1f87bfc47a21', // ← ESTE ES EL CORRECTO
+    redirectUri: 'https://sologuicho.github.io/informaTecnm-WebApp/',
     scopes: ['openid', 'profile', 'email', 'User.Read']
 };
 
