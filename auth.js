@@ -1,4 +1,4 @@
-// Configuración de MSAL
+// Configuración de MSAL - CORREGIDO
 const MSAL_CONFIG = {
     auth: {
         clientId: 'f9467bc5-d6d0-4200-98c1-887bfc90fc86',
@@ -12,45 +12,71 @@ const MSAL_CONFIG = {
     }
 };
 
-// Inicializar MSAL
+// Variable global para MSAL
 let msalInstance = null;
 
-try {
-    msalInstance = new msal.PublicClientApplication(MSAL_CONFIG);
-    
-    // Manejar redirección después de login
-    msalInstance.initialize().then(() => {
-        msalInstance.handleRedirectPromise().then(handleResponse).catch(error => {
-            console.error('Error handling redirect promise:', error);
-        });
-    });
-} catch (error) {
-    console.error('Error initializing MSAL:', error);
+// Inicializar MSAL
+function initializeMSAL() {
+    try {
+        if (window.msal && window.msal.PublicClientApplication) {
+            msalInstance = new msal.PublicClientApplication(MSAL_CONFIG);
+            
+            msalInstance.initialize().then(() => {
+                console.log('MSAL inicializado correctamente');
+                msalInstance.handleRedirectPromise().then(handleResponse).catch(error => {
+                    console.error('Error en redirect promise:', error);
+                });
+            }).catch(error => {
+                console.error('Error inicializando MSAL:', error);
+            });
+        } else {
+            console.error('MSAL no está cargado correctamente');
+        }
+    } catch (error) {
+        console.error('Error creando instancia MSAL:', error);
+    }
+}
+
+// Llamar a inicialización cuando MSAL esté cargado
+if (typeof msal !== 'undefined') {
+    initializeMSAL();
+} else {
+    // Esperar a que MSAL se cargue
+    window.addEventListener('load', initializeMSAL);
 }
 
 function handleResponse(response) {
     if (response) {
         console.log('Login redirect successful:', response);
-        // Usuario autenticado por redirección
         window.location.href = window.location.origin + window.location.pathname;
     }
 }
 
 // Microsoft OAuth Login Function usando MSAL
 async function MicrosoftOAuthLogin() {
+    // Verificar que MSAL esté cargado
+    if (typeof msal === 'undefined') {
+        throw new Error('MSAL.js no está cargado. Verifica que el script esté incluido correctamente.');
+    }
+    
     if (!msalInstance) {
-        throw new Error('MSAL no está inicializado correctamente');
+        initializeMSAL();
+        await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+    
+    if (!msalInstance) {
+        throw new Error('No se pudo inicializar MSAL. Por favor recarga la página.');
     }
     
     try {
         console.log('Iniciando login con MSAL...');
         
         const loginRequest = {
-            scopes: ['User.Read', 'openid', 'profile'],
+            scopes: ['User.Read'],
             prompt: 'select_account'
         };
 
-        // Usar popup para mejor UX
+        console.log('Abriendo popup de login...');
         const loginResponse = await msalInstance.loginPopup(loginRequest);
         console.log('Login exitoso:', loginResponse);
 
@@ -68,11 +94,18 @@ async function MicrosoftOAuthLogin() {
     } catch (error) {
         console.error('Error en login MSAL:', error);
         
-        // Manejar errores específicos
-        if (error.errorCode === 'interaction_required') {
-            throw new Error('Se requiere interacción adicional. Por favor intenta nuevamente.');
-        } else if (error.errorCode) {
-            throw new Error(`Error de autenticación: ${error.errorMessage || error.errorCode}`);
+        // Manejar errores específicos de MSAL
+        if (error.errorCode) {
+            switch (error.errorCode) {
+                case 'interaction_required':
+                    throw new Error('Se requiere interacción adicional. Por favor intenta nuevamente.');
+                case 'user_cancelled':
+                    throw new Error('El usuario canceló el inicio de sesión.');
+                case 'popup_window_error':
+                    throw new Error('Error con la ventana emergente. Por favor permite ventanas emergentes para este sitio.');
+                default:
+                    throw new Error(`Error de autenticación: ${error.errorMessage || error.errorCode}`);
+            }
         } else {
             throw new Error('Error al iniciar sesión: ' + error.message);
         }
@@ -101,14 +134,14 @@ async function getUserInfo(accessToken) {
         return {
             userId: userData.id,
             email: userData.mail || userData.userPrincipalName,
-            name: userData.displayName || userData.userPrincipalName.split('@')[0]
+            name: userData.displayName || userData.userPrincipalName.split('@')[0] || 'Usuario'
         };
 
     } catch (error) {
         console.error('Error obteniendo información del usuario:', error);
-        // Si falla, devolver información básica del token
+        // Si falla, devolver información básica
         return {
-            userId: 'unknown',
+            userId: 'unknown-' + Date.now(),
             email: 'user@example.com',
             name: 'Usuario'
         };
@@ -117,12 +150,13 @@ async function getUserInfo(accessToken) {
 
 // Manejar estado de autenticación
 function handleAuthentication(userInfo) {
-    if (userInfo && userInfo.userId) {
+    if (userInfo && userInfo.accessToken) {
         localStorage.setItem('userId', userInfo.userId);
         localStorage.setItem('accessToken', userInfo.accessToken);
         localStorage.setItem('userEmail', userInfo.email);
         localStorage.setItem('userName', userInfo.name);
         localStorage.setItem('loginMethod', 'msal');
+        localStorage.setItem('loginTime', new Date().toISOString());
         
         console.log('Autenticación guardada en localStorage');
         return true;
@@ -134,9 +168,16 @@ function handleAuthentication(userInfo) {
 function isAuthenticated() {
     const token = localStorage.getItem('accessToken');
     const method = localStorage.getItem('loginMethod');
+    const loginTime = localStorage.getItem('loginTime');
     
-    if (token && method === 'msal') {
-        return true;
+    if (token && method === 'msal' && loginTime) {
+        // Verificar que el login no sea muy antiguo (opcional)
+        const loginDate = new Date(loginTime);
+        const now = new Date();
+        const hoursDiff = (now - loginDate) / (1000 * 60 * 60);
+        
+        // Considerar válido si tiene menos de 24 horas
+        return hoursDiff < 24;
     }
     return false;
 }
@@ -150,21 +191,16 @@ async function logout() {
         localStorage.removeItem('userEmail');
         localStorage.removeItem('userName');
         localStorage.removeItem('loginMethod');
+        localStorage.removeItem('loginTime');
         localStorage.removeItem('aiCheckCompleted');
         localStorage.removeItem('lastSubmittedArticle');
         
-        // Cerrar sesión en MSAL si está disponible
-        if (msalInstance) {
-            await msalInstance.logoutPopup({
-                postLogoutRedirectUri: MSAL_CONFIG.auth.postLogoutRedirectUri
-            });
-        }
-        
-        console.log('Logout exitoso');
+        console.log('Sesión cerrada localmente');
         
     } catch (error) {
         console.error('Error en logout:', error);
-        // Forzar recarga incluso si hay error
+    } finally {
+        // Siempre recargar la página
         window.location.reload();
     }
 }
@@ -180,4 +216,13 @@ function getCurrentUser() {
         };
     }
     return null;
+}
+
+// Función de respaldo para desarrollo
+function debugAuth() {
+    console.log('MSAL disponible:', typeof msal !== 'undefined');
+    console.log('MSAL Instance:', msalInstance);
+    console.log('Usuario autenticado:', isAuthenticated());
+    console.log('Usuario actual:', getCurrentUser());
+    console.log('LocalStorage:', localStorage);
 }
