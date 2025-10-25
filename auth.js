@@ -13,24 +13,35 @@ const MSAL_CONFIG = {
 };
 
 // Inicializar MSAL
-const msalInstance = new msal.PublicClientApplication(MSAL_CONFIG);
+let msalInstance = null;
 
-// Verificar si hay una respuesta de redirección
-msalInstance.initialize().then(() => {
-    msalInstance.handleRedirectPromise().then(handleResponse).catch(error => {
-        console.error('Error handling redirect promise:', error);
+try {
+    msalInstance = new msal.PublicClientApplication(MSAL_CONFIG);
+    
+    // Manejar redirección después de login
+    msalInstance.initialize().then(() => {
+        msalInstance.handleRedirectPromise().then(handleResponse).catch(error => {
+            console.error('Error handling redirect promise:', error);
+        });
     });
-});
+} catch (error) {
+    console.error('Error initializing MSAL:', error);
+}
 
 function handleResponse(response) {
     if (response) {
         console.log('Login redirect successful:', response);
-        // El usuario ya está autenticado por redirección
+        // Usuario autenticado por redirección
+        window.location.href = window.location.origin + window.location.pathname;
     }
 }
 
 // Microsoft OAuth Login Function usando MSAL
 async function MicrosoftOAuthLogin() {
+    if (!msalInstance) {
+        throw new Error('MSAL no está inicializado correctamente');
+    }
+    
     try {
         console.log('Iniciando login con MSAL...');
         
@@ -39,18 +50,17 @@ async function MicrosoftOAuthLogin() {
             prompt: 'select_account'
         };
 
-        // Usar popup en lugar de redirect para mejor UX
+        // Usar popup para mejor UX
         const loginResponse = await msalInstance.loginPopup(loginRequest);
         console.log('Login exitoso:', loginResponse);
 
-        // Obtener información del usuario con el token
+        // Obtener información del usuario
         const userInfo = await getUserInfo(loginResponse.accessToken);
         
         // Guardar en localStorage
         handleAuthentication({
             ...userInfo,
-            accessToken: loginResponse.accessToken,
-            account: loginResponse.account
+            accessToken: loginResponse.accessToken
         });
 
         return userInfo;
@@ -59,10 +69,10 @@ async function MicrosoftOAuthLogin() {
         console.error('Error en login MSAL:', error);
         
         // Manejar errores específicos
-        if (error instanceof msal.InteractionRequiredAuthError) {
+        if (error.errorCode === 'interaction_required') {
             throw new Error('Se requiere interacción adicional. Por favor intenta nuevamente.');
-        } else if (error instanceof msal.BrowserAuthError) {
-            throw new Error('Error del navegador: ' + error.message);
+        } else if (error.errorCode) {
+            throw new Error(`Error de autenticación: ${error.errorMessage || error.errorCode}`);
         } else {
             throw new Error('Error al iniciar sesión: ' + error.message);
         }
@@ -91,12 +101,17 @@ async function getUserInfo(accessToken) {
         return {
             userId: userData.id,
             email: userData.mail || userData.userPrincipalName,
-            name: userData.displayName || userData.userPrincipalName
+            name: userData.displayName || userData.userPrincipalName.split('@')[0]
         };
 
     } catch (error) {
         console.error('Error obteniendo información del usuario:', error);
-        throw new Error('No se pudo obtener la información del usuario: ' + error.message);
+        // Si falla, devolver información básica del token
+        return {
+            userId: 'unknown',
+            email: 'user@example.com',
+            name: 'Usuario'
+        };
     }
 }
 
@@ -121,7 +136,6 @@ function isAuthenticated() {
     const method = localStorage.getItem('loginMethod');
     
     if (token && method === 'msal') {
-        // Verificar si el token está cerca de expirar (opcional)
         return true;
     }
     return false;
@@ -139,16 +153,18 @@ async function logout() {
         localStorage.removeItem('aiCheckCompleted');
         localStorage.removeItem('lastSubmittedArticle');
         
-        // Cerrar sesión en MSAL
-        await msalInstance.logoutPopup({
-            postLogoutRedirectUri: MSAL_CONFIG.auth.postLogoutRedirectUri
-        });
+        // Cerrar sesión en MSAL si está disponible
+        if (msalInstance) {
+            await msalInstance.logoutPopup({
+                postLogoutRedirectUri: MSAL_CONFIG.auth.postLogoutRedirectUri
+            });
+        }
         
         console.log('Logout exitoso');
         
     } catch (error) {
         console.error('Error en logout:', error);
-        // Forzar recarga incluso si hay error en logout de MSAL
+        // Forzar recarga incluso si hay error
         window.location.reload();
     }
 }
@@ -164,24 +180,4 @@ function getCurrentUser() {
         };
     }
     return null;
-}
-
-// Obtener token silenciosamente (para llamadas a API)
-async function getAccessToken() {
-    try {
-        const account = msalInstance.getAllAccounts()[0];
-        if (account) {
-            const silentRequest = {
-                scopes: ['User.Read'],
-                account: account
-            };
-            
-            const response = await msalInstance.acquireTokenSilent(silentRequest);
-            return response.accessToken;
-        }
-        return null;
-    } catch (error) {
-        console.error('Error obteniendo token silencioso:', error);
-        return null;
-    }
 }
