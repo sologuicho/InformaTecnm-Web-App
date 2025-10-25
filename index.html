@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>InformaTECNM - Portal de Artículos</title>
+    
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Quill Editor -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="components.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="bg-white header-shadow sticky top-0 z-10">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <img src="https://cdn.pixabay.com/photo/2018/09/24/08/31/pixel-cells-3699334_960_720.png" alt="InformaTECNM Logo" class="h-10">
+                    <h1 class="text-xl font-bold text-gray-800">InformaTECNM</h1>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button id="articulos-btn" class="px-3 py-2 rounded-md text-white tecnm-primary hover:bg-opacity-90 text-sm">
+                        Artículos Públicos
+                    </button>
+                    <button id="login-btn" class="px-3 py-2 rounded-md text-white login-btn hover:bg-opacity-90 text-sm">
+                        <i class="fab fa-microsoft mr-2"></i> Iniciar Sesión
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Portal Page (Default View) -->
+    <div id="main-portal" class="container mx-auto px-4 py-6">
+        <!-- Categorías en la parte superior -->
+        <div class="mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-3">Categorías</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                <div class="category-card bg-white p-3 rounded-lg shadow-sm text-center cursor-pointer hover:shadow transition-all border border-gray-100">
+                    <i class="fas fa-laptop-code text-xl mb-1 text-blue-600"></i>
+                    <h3 class="font-medium text-sm">Tecnología</h3>
+                </div>
+                <div class="category-card bg-white p-3 rounded-lg shadow-sm text-center cursor-pointer hover:shadow transition-all border border-gray-100">
+                    <i class="fas fa-flask text-xl mb-1 text-green-600"></i>
+                    <h3 class="font-medium text-sm">Ciencia</h3>
+                </div>
+                <div class="category-card bg-white p-3 rounded-lg shadow-sm text-center cursor-pointer hover:shadow transition-all border border-gray-100">
+                    <i class="fas fa-lightbulb text-xl mb-1 text-yellow-600"></i>
+                    <h3 class="font-medium text-sm">Innovación</h3>
+                </div>
+                <div class="category-card bg-white p-3 rounded-lg shadow-sm text-center cursor-pointer hover:shadow transition-all border border-gray-100">
+                    <i class="fas fa-graduation-cap text-xl mb-1 text-red-600"></i>
+                    <h3 class="font-medium text-sm">Educación</h3>
+                </div>
+                <div class="category-card bg-white p-3 rounded-lg shadow-sm text-center cursor-pointer hover:shadow transition-all border border-gray-100">
+                    <i class="fas fa-heartbeat text-xl mb-1 text-red-600"></i>
+                    <h3 class="font-medium text-sm">Salud</h3>
+                </div>
+                <div class="category-card bg-white p-3 rounded-lg shadow-sm text-center cursor-pointer hover:shadow transition-all border border-gray-100">
+                    <i class="fas fa-chart-line text-xl mb-1 text-green-600"></i>
+                    <h3 class="font-medium text-sm">Economía</h3>
+                </div>
+                <div class="category-card bg-white p-3 rounded-lg shadow-sm text-center cursor-pointer hover:shadow transition-all border border-gray-100">
+                    <i class="fas fa-palette text-xl mb-1 text-purple-600"></i>
+                    <h3 class="font-medium text-sm">Arte</h3>
+                </div>
+                <div class="category-card bg-white p-3 rounded-lg shadow-sm text-center cursor-pointer hover:shadow transition-all border border-gray-100">
+                    <i class="fas fa-futbol text-xl mb-1 text-blue-600"></i>
+                    <h3 class="font-medium text-sm">Deportes</h3>
+                </div>
+                <div class="category-card bg-white p-3 rounded-lg shadow-sm text-center cursor-pointer hover:shadow transition-all border border-gray-100">
+                    <i class="fas fa-landmark text-xl mb-1 text-amber-600"></i>
+                    <h3 class="font-medium text-sm">Historia</h3>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Artículos Recientes -->
+        <div class="mb-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
+                <h2 class="text-2xl font-bold text-gray-800">Artículos Recientes</h2>
+                <div class="relative w-full sm:w-64">
+                    <input type="text" placeholder="Buscar artículos..." class="w-full pl-9 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Article Cards -->
+                <div class="article-card bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100">
+                    <img src="https://cdn.pixabay.com/photo/2015/09/05/21/51/reading-925589_960_720.jpg" alt="Article Cover" class="w-full h-40 object-cover">
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">La Importancia de la Educación Tecnológica</h3>
+                        <p class="text-gray-600 text-sm mb-3">La educación tecnológica se ha vuelto crucial en el mundo moderno. Este artículo explora cómo impacta el desarrollo profesional...</p>
+                        <div class="flex justify-between items-center text-xs text-gray-500">
+                            <span>Por: Ana García</span>
+                            <span>Mayo 15, 2025</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="article-card bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100">
+                    <img src="https://cdn.pixabay.com/photo/2018/05/08/08/44/artificial-intelligence-3382507_960_720.jpg" alt="Article Cover" class="w-full h-40 object-cover">
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Inteligencia Artificial en la Educación</h3>
+                        <p class="text-gray-600 text-sm mb-3">El uso de la IA está transformando la forma en que aprendemos. Descubre cómo estas tecnologías están creando nuevas oportunidades...</p>
+                        <div class="flex justify-between items-center text-xs text-gray-500">
+                            <span>Por: Carlos Mendoza</span>
+                            <span>Mayo 10, 2025</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="article-card bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100">
+                    <img src="https://cdn.pixabay.com/photo/2018/03/27/21/43/startup-3267505_960_720.jpg" alt="Article Cover" class="w-full h-40 object-cover">
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Emprendimiento Estudiantil</h3>
+                        <p class="text-gray-600 text-sm mb-3">Cada vez más estudiantes deciden iniciar sus propios proyectos durante su formación académica. Te contamos historias de éxito...</p>
+                        <div class="flex justify-between items-center text-xs text-gray-500">
+                            <span>Por: Laura Sánchez</span>
+                            <span>Mayo 5, 2025</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer-tecnm py-6 mt-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex flex-col md:flex-row items-center mb-4 md:mb-0">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/TecNM_logo.svg/1200px-TecNM_logo.svg.png" alt="TECNM Logo" class="h-12 mb-3 md:mb-0 md:mr-4">
+                    <div class="text-center md:text-left">
+                        <p class="text-white text-sm">Desarrollado por Luis A. Flores, estudiante de Tecnologías de la Información.</p>
+                        <p class="text-white text-sm mt-1">Tecnológico Nacional de México campus Reynosa</p>
+                    </div>
+                </div>
+                <div class="flex space-x-3">
+                    <a href="www.linkedin.com/in/luisflores2025" target="_blank" class="text-white hover:text-blue-300 transition-colors">
+                        <i class="fab fa-linkedin text-lg"></i>
+                    </a>
+                    <a href="https://github.com/sologuicho" target="_blank" class="text-white hover:text-gray-300 transition-colors">
+                        <i class="fab fa-github text-lg"></i>
+                    </a>
+                    <a href="https://www.instagram.com/luissescobedo/" target="_blank" class="text-white hover:text-pink-300 transition-colors">
+                        <i class="fab fa-instagram text-lg"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Writing Dashboard (Hidden by default) -->
+    <div id="writing-dashboard" class="container mx-auto px-4 py-6 hidden">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
+            <h2 class="text-2xl font-bold text-gray-800">Redacta tu Artículo</h2>
+            <button id="toggle-ai-panel" class="px-3 py-2 rounded-md bg-gray-100 hover:bg-gray-200 flex items-center text-sm">
+                <i class="fas fa-robot mr-2 text-blue-600"></i> 
+                <span id="panel-text">Panel IA</span>
+            </button>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-4">
+            <!-- Main Editor -->
+            <div class="flex-1 bg-white rounded-lg shadow-sm p-4 border border-gray-100">
+                <input type="text" id="article-title" placeholder="Título del artículo" class="w-full text-xl font-bold mb-3 p-2 border-b-2 border-gray-200 focus:outline-none focus:border-blue-500">
+                
+                <div class="mb-3">
+                    <select id="article-category" class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                        <option value="">Seleccionar Categoría</option>
+                        <option value="technology">Tecnología</option>
+                        <option value="science">Ciencia</option>
+                        <option value="innovation">Innovación</option>
+                        <option value="education">Educación</option>
+                        <option value="ai">Inteligencia Artificial</option>
+                        <option value="health">Salud</option>
+                        <option value="economy">Economía</option>
+                        <option value="art-culture">Arte y Cultura</option>
+                        <option value="sports">Deportes</option>
+                        <option value="history">Historia</option>
+                    </select>
+                </div>
+                
+                <div id="editor" class="min-h-[300px] border rounded-md">
+                    <!-- Rich text editor will be initialized here -->
+                </div>
+                
+                <div class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 mt-3">
+                    <button id="check-ai-btn" class="px-4 py-2 rounded-md bg-blue-100 text-blue-700 hover:bg-blue-200 flex items-center justify-center text-sm">
+                        <i class="fas fa-spell-check mr-2"></i>
+                        Revisar con IA
+                    </button>
+                    <button id="submit-article-btn" class="px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 flex items-center justify-center text-sm">
+                        <i class="fas fa-paper-plane mr-2"></i>
+                        Enviar Artículo
+                    </button>
+                </div>
+            </div>
+            
+            <!-- AI Feedback Panel (Hidden by default) -->
+            <div id="ai-feedback-panel" class="lg:w-1/3 bg-white rounded-lg shadow-sm p-4 hidden border border-gray-100">
+                <h3 class="text-lg font-semibold mb-3">Sugerencias de IA</h3>
+                <div id="ai-feedback-content" class="space-y-3">
+                    <p class="text-gray-500 italic text-sm">Utiliza el botón "Revisar con IA" para recibir sugerencias sobre tu artículo.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Submission Confirmation (Hidden by default) -->
+    <div id="submission-confirmation" class="container mx-auto px-4 py-6 hidden">
+        <div class="bg-white rounded-lg shadow-sm p-6 max-w-2xl mx-auto text-center border border-gray-100">
+            <div class="mb-4 text-green-500">
+                <i class="fas fa-check-circle text-5xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-3">¡Artículo Enviado!</h2>
+            <p class="text-gray-600 text-sm mb-4">Tu artículo ha sido enviado exitosamente y está pendiente de revisión. Te notificaremos cuando sea publicado.</p>
+            <button id="write-another-btn" class="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 text-sm">
+                Escribir otro artículo
+            </button>
+        </div>
+    </div>
+
+    <!-- Login Modal (Hidden by default) -->
+    <div id="login-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-800">Iniciar Sesión</h3>
+                <button id="close-login-modal" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+            </div>
+            <div class="text-center">
+                <button id="microsoft-login-btn" class="w-full py-2 px-4 rounded-md bg-blue-600 text-white hover:bg-blue-700 flex items-center justify-center text-sm">
+                    <i class="fab fa-microsoft mr-2"></i>
+                    Iniciar sesión con Microsoft
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="auth.js"></script>
+    <script src="editor.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

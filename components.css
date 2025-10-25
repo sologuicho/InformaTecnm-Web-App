@@ -1,0 +1,101 @@
+/* Componentes de la aplicación */
+
+/* Tarjetas de artículos */
+.article-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.article-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px -2px rgba(0, 0, 0, 0.1);
+}
+
+/* Tarjetas de categorías */
+.category-card {
+    transition: all 0.2s ease;
+}
+
+.category-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px -1px rgba(0, 0, 0, 0.1);
+}
+
+.category-card.active-category {
+    background-color: #1B396A;
+    color: white;
+    border-color: #1B396A;
+}
+
+.category-card.active-category i {
+    color: white !important;
+}
+
+/* Panel de IA */
+.ai-suggestion {
+    background-color: #f0f9ff;
+    border-left: 3px solid #007BFF;
+    padding: 12px;
+    border-radius: 4px;
+}
+
+.ai-correction {
+    background-color: #fef2f2;
+    border-left: 3px solid #ef4444;
+    padding: 12px;
+    border-radius: 4px;
+}
+
+/* Botones */
+.login-btn {
+    background-color: #1B396A;
+}
+
+.login-btn:hover {
+    background-color: #142c53;
+}
+
+/* Editor */
+.ql-editor {
+    min-height: 250px;
+    font-size: 14px;
+}
+
+.ql-toolbar {
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.ql-container {
+    border: none !important;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    .article-card img {
+        height: 120px;
+    }
+}
+
+/* Estados de carga */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease;
+}
