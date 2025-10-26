@@ -16,7 +16,7 @@
     
     <!-- Quill Editor -->
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-        <script type="text/javascript" src="https://alcdn.msauth.net/browser/2.24.0/js/msal-browser.min.js"></script>
+
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="styles.css">
@@ -164,53 +164,81 @@
             </div>
         </div>
     </footer>
-
-    <!-- Writing Dashboard (Hidden by default) -->
-    <div id="writing-dashboard" class="container mx-auto px-4 py-6 hidden">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
-            <h2 class="text-2xl font-bold text-gray-800">Redacta tu Artículo</h2>
-            <button id="toggle-ai-panel" class="px-3 py-2 rounded-md bg-gray-100 hover:bg-gray-200 flex items-center text-sm">
+<!-- Writing Dashboard (Hidden by default) -->
+<div id="writing-dashboard" class="container mx-auto px-4 py-6 hidden">
+    <!-- Encabezado del panel -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
+        <h2 class="text-2xl font-bold text-gray-800">Redacta tu Artículo</h2>
+        <div class="flex space-x-2">
+            <!-- Botón de alternar Panel IA -->
+            <button id="toggle-ai-panel" 
+                class="px-3 py-2 rounded-md bg-gray-100 hover:bg-gray-200 flex items-center text-sm">
                 <i class="fas fa-robot mr-2 text-blue-600"></i> 
                 <span id="panel-text">Panel IA</span>
             </button>
+
+            <!-- Botón de Cerrar sesión -->
+            <button id="logout-btn" 
+                class="px-3 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 flex items-center text-sm">
+                <i class="fas fa-sign-out-alt mr-2"></i>
+                Cerrar sesión
+            </button>
+        </div>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="flex flex-col lg:flex-row gap-4">
+        <!-- Main Editor -->
+        <div class="flex-1 bg-white rounded-lg shadow-sm p-4 border border-gray-100">
+            <input type="text" id="article-title" placeholder="Título del artículo" 
+                class="w-full text-xl font-bold mb-3 p-2 border-b-2 border-gray-200 focus:outline-none focus:border-blue-500">
+            
+            <div class="mb-3">
+                <select id="article-category" 
+                    class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                    <option value="">Seleccionar Categoría</option>
+                    <option value="technology">Tecnología</option>
+                    <option value="science">Ciencia</option>
+                    <option value="innovation">Innovación</option>
+                    <option value="education">Educación</option>
+                    <option value="ai">Inteligencia Artificial</option>
+                    <option value="health">Salud</option>
+                    <option value="economy">Economía</option>
+                    <option value="art-culture">Arte y Cultura</option>
+                    <option value="sports">Deportes</option>
+                    <option value="history">Historia</option>
+                </select>
+            </div>
+            
+            <div id="editor" class="min-h-[300px] border rounded-md">
+                <!-- Rich text editor will be initialized here -->
+            </div>
+            
+            <div class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 mt-3">
+                <button id="check-ai-btn" 
+                    class="px-4 py-2 rounded-md bg-blue-100 text-blue-700 hover:bg-blue-200 flex items-center justify-center text-sm">
+                    <i class="fas fa-spell-check mr-2"></i>
+                    Revisar con IA
+                </button>
+                <button id="submit-article-btn" 
+                    class="px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 flex items-center justify-center text-sm">
+                    <i class="fas fa-paper-plane mr-2"></i>
+                    Enviar Artículo
+                </button>
+            </div>
         </div>
 
-        <div class="flex flex-col lg:flex-row gap-4">
-            <!-- Main Editor -->
-            <div class="flex-1 bg-white rounded-lg shadow-sm p-4 border border-gray-100">
-                <input type="text" id="article-title" placeholder="Título del artículo" class="w-full text-xl font-bold mb-3 p-2 border-b-2 border-gray-200 focus:outline-none focus:border-blue-500">
-                
-                <div class="mb-3">
-                    <select id="article-category" class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
-                        <option value="">Seleccionar Categoría</option>
-                        <option value="technology">Tecnología</option>
-                        <option value="science">Ciencia</option>
-                        <option value="innovation">Innovación</option>
-                        <option value="education">Educación</option>
-                        <option value="ai">Inteligencia Artificial</option>
-                        <option value="health">Salud</option>
-                        <option value="economy">Economía</option>
-                        <option value="art-culture">Arte y Cultura</option>
-                        <option value="sports">Deportes</option>
-                        <option value="history">Historia</option>
-                    </select>
-                </div>
-                
-                <div id="editor" class="min-h-[300px] border rounded-md">
-                    <!-- Rich text editor will be initialized here -->
-                </div>
-                
-                <div class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 mt-3">
-                    <button id="check-ai-btn" class="px-4 py-2 rounded-md bg-blue-100 text-blue-700 hover:bg-blue-200 flex items-center justify-center text-sm">
-                        <i class="fas fa-spell-check mr-2"></i>
-                        Revisar con IA
-                    </button>
-                    <button id="submit-article-btn" class="px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 flex items-center justify-center text-sm">
-                        <i class="fas fa-paper-plane mr-2"></i>
-                        Enviar Artículo
-                    </button>
-                </div>
+        <!-- AI Feedback Panel (Hidden by default) -->
+        <div id="ai-feedback-panel" class="lg:w-1/3 bg-white rounded-lg shadow-sm p-4 hidden border border-gray-100">
+            <h3 class="text-lg font-semibold mb-3">Sugerencias de IA</h3>
+            <div id="ai-feedback-content" class="space-y-3">
+                <p class="text-gray-500 italic text-sm">
+                    Utiliza el botón "Revisar con IA" para recibir sugerencias sobre tu artículo.
+                </p>
             </div>
+        </div>
+    </div>
+</div>
             
             <!-- AI Feedback Panel (Hidden by default) -->
             <div id="ai-feedback-panel" class="lg:w-1/3 bg-white rounded-lg shadow-sm p-4 hidden border border-gray-100">
@@ -257,6 +285,8 @@
     <!-- Scripts -->
     <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js"></script>
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
     
     <!-- Custom JS -->
     <script src="auth.js"></script>
