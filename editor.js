@@ -1,86 +1,64 @@
-// Inicialización y manejo del editor Quill
+// editor.js
 let quill;
 
-function initializeEditor() {
-    quill = new Quill('#editor', {
-        theme: 'snow',
-        placeholder: 'Comienza a escribir tu artículo aquí...',
+document.addEventListener("DOMContentLoaded", () => {
+    quill = new Quill("#editor", {
+        theme: "snow",
+        placeholder: "Escribe tu artículo aquí...",
         modules: {
             toolbar: [
-                ['bold', 'italic', 'underline'],
-                ['blockquote', 'code-block'],
-                [{ 'header': 1 }, { 'header': 2 }],
-                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                ['link'],
-                ['clean']
+                [{ header: [1, 2, 3, false] }],
+                ["bold", "italic", "underline"],
+                ["blockquote", "code-block"],
+                [{ list: "ordered" }, { list: "bullet" }],
+                ["link", "image"],
+                ["clean"]
             ]
         }
     });
-    
-    return quill;
-}
 
-// Función para revisar con IA
-function checkWithAI() {
-    return new Promise((resolve) => {
-        const articleContent = quill.root.innerHTML;
-        
-        // Simular procesamiento de IA
+    // Botón IA
+    document.getElementById("check-ai-btn").addEventListener("click", () => {
+        const content = quill.root.innerHTML;
+        const aiPanel = document.getElementById("ai-feedback-panel");
+        const aiContent = document.getElementById("ai-feedback-content");
+
+        aiPanel.classList.remove("hidden");
+        aiContent.innerHTML = `
+            <p class="text-gray-500 italic text-sm">Analizando tu artículo...</p>
+        `;
+
         setTimeout(() => {
-            const suggestions = [
-                {
-                    type: 'suggestion',
-                    title: 'Sugerencia de estilo',
-                    message: 'Considera reorganizar el segundo párrafo para mejorar la claridad.'
-                },
-                {
-                    type: 'correction',
-                    title: 'Corrección gramatical',
-                    message: 'Se detectaron algunos errores de ortografía y puntuación.'
-                },
-                {
-                    type: 'verification',
-                    title: 'Verificación de datos',
-                    message: 'Algunas estadísticas pueden requerir citas adicionales.'
-                }
-            ];
-            
-            resolve(suggestions);
+            aiContent.innerHTML = `
+                <div class="bg-blue-50 border border-blue-100 p-3 rounded-md">
+                    <p class="text-gray-700 text-sm">
+                        ✨ Tu redacción es clara. Podrías agregar más detalles técnicos en los párrafos 2 y 3 para reforzar el argumento principal.
+                    </p>
+                </div>
+            `;
         }, 1500);
     });
-}
 
-// Función para enviar artículo
-function submitArticle(articleData) {
-    return new Promise((resolve) => {
-        // Simular envío
-        setTimeout(() => {
-            // Guardar en localStorage
-            const articles = JSON.parse(localStorage.getItem('submittedArticles') || '[]');
-            articles.push({
-                ...articleData,
-                id: Date.now().toString(),
-                status: 'pending',
-                submittedAt: new Date().toISOString()
-            });
-            localStorage.setItem('submittedArticles', JSON.stringify(articles));
-            
-            resolve({ success: true, id: Date.now().toString() });
-        }, 1000);
+    // Botón de envío
+    document.getElementById("submit-article-btn").addEventListener("click", () => {
+        document.getElementById("writing-dashboard").classList.add("hidden");
+        document.getElementById("submission-confirmation").classList.remove("hidden");
     });
-}
 
-// Función para obtener artículos del usuario
-function getUserArticles() {
-    const articles = JSON.parse(localStorage.getItem('submittedArticles') || '[]');
-    return articles.filter(article => article.author === getCurrentUser()?.name);
-}
+    // Botón “Escribir otro artículo”
+    document.getElementById("write-another-btn").addEventListener("click", () => {
+        quill.root.innerHTML = "";
+        document.getElementById("submission-confirmation").classList.add("hidden");
+        document.getElementById("writing-dashboard").classList.remove("hidden");
+    });
 
-// Limpiar editor
-function clearEditor() {
-    if (quill) {
-        quill.setText('');
-    }
-    $('#article-title').val('');
-    $('#article-category').val('');
-}
+    // Botón para mostrar/ocultar panel IA
+    document.getElementById("toggle-ai-panel").addEventListener("click", () => {
+        const aiPanel = document.getElementById("ai-feedback-panel");
+        const panelText = document.getElementById("panel-text");
+        aiPanel.classList.toggle("hidden");
+        panelText.textContent = aiPanel.classList.contains("hidden")
+            ? "Panel IA"
+            : "Ocultar Panel";
+    });
+});
